@@ -1,0 +1,16 @@
+version: '3'
+services:
+  mongodb:
+    image: mongo:4
+    container_name: mongodb
+    restart: always
+    environment:
+        MONGO_INITDB_ROOT_USERNAME: fzrsahi
+        MONGO_INITDB_ROOT_PASSWORD: 123
+        MONGO_INITDB_ROOT_DATABASE: nestmongo
+    ports:
+      - 27017:27017
+
+
+
+
