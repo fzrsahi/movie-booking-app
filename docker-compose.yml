@@ -1,16 +1,10 @@
-version: '3'
+version: '3.8'
 services:
-  mongodb:
-    image: mongo:4
-    container_name: mongodb
-    restart: always
-    environment:
-        MONGO_INITDB_ROOT_USERNAME: fzrsahi
-        MONGO_INITDB_ROOT_PASSWORD: 123
-        MONGO_INITDB_ROOT_DATABASE: nestmongo
+  dev-db:
+    image: postgres:alpine3.18
     ports:
-      - 27017:27017
-
-
-
-
+      - 5434:5432
+    environment:
+      POSTGRES_USER: fzrsahi
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: movie_app

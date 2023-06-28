@@ -6,7 +6,7 @@ import { PrismaService } from './prisma/prisma.service';
 
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
-import { BalanceModule } from './balance/balance.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -15,7 +15,7 @@ import { BalanceModule } from './balance/balance.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    BalanceModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

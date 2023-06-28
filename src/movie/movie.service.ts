@@ -13,7 +13,7 @@ export class MovieService {
       take: limit,
       skip,
       select: {
-        id_: true,
+        id: true,
         title: true,
         description: true,
         price: true,
@@ -34,7 +34,7 @@ export class MovieService {
   async getMovieById(movieId: number) {
     const movie = await this.prisma.movie.findFirst({
       where: {
-        id_: movieId,
+        id: movieId,
       },
     });
 

@@ -3,13 +3,23 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String   @id @default(uuid())
+  username  String
+  email     String   @unique
+  birth     String
+  hash      String
+  age       Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Movie {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
-  id_         Int    @map("id")
+  id          Int    @id @default(autoincrement())
   title       String
   description String
   price       Int
