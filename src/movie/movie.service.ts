@@ -12,15 +12,6 @@ export class MovieService {
     const movies = await this.prisma.movie.findMany({
       take: limit,
       skip,
-      select: {
-        id_: true,
-        title: true,
-        description: true,
-        price: true,
-        releaseDate: true,
-        ageRating: true,
-        poster: true,
-      },
     });
 
     return {
@@ -34,7 +25,7 @@ export class MovieService {
   async getMovieById(movieId: number) {
     const movie = await this.prisma.movie.findFirst({
       where: {
-        id_: movieId,
+        id: movieId,
       },
     });
 
