@@ -29,12 +29,12 @@ export class CreateUserDto {
   age?: number;
 }
 
-// export class userDto {
-//   @IsString()
-//   @IsNotEmpty()
-//   username: string;
+export class UserLoginDto {
+  @IsString()
+  @IsNotEmpty()
+  username: string;
 
-//   @IsString()
-//   @IsNotEmpty()
-//   hash: string;
-// }
+  @IsString()
+  @IsNotEmpty()
+  hash: string;
+}

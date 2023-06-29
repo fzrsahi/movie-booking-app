@@ -1,7 +1,6 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from './dto/';
-import * as bcrypt from 'bcrypt';
+import { CreateUserDto, UserLoginDto } from './dto/';
 
 @Controller('auth')
 export class AuthController {
@@ -9,32 +8,12 @@ export class AuthController {
 
   @Post('signup')
   async createUser(@Body() dto: CreateUserDto) {
-    const saltOrRounds = 10;
-    const salt = await bcrypt.genSalt();
-    const password = salt + dto.hash + salt;
-    const hash = await bcrypt.hash(password, saltOrRounds);
-
-    const age = this.getAge(dto.birth);
-
-    const CreateUserDto: CreateUserDto = {
-      username: dto.email,
-      email: dto.email,
-      birth: dto.birth,
-      age: age,
-      hash,
-    };
-
-    return this.authService.createUser(CreateUserDto);
+    return this.authService.createUser(dto);
   }
 
-  getAge(dateString) {
-    var today = new Date();
-    var birthDate = new Date(dateString);
-    var age = today.getFullYear() - birthDate.getFullYear();
-    var m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    return age;
+  @HttpCode(200)
+  @Post('signin')
+  userLogin(@Body() dto: UserLoginDto) {
+    return this.authService.userLogin(dto);
   }
 }

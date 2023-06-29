@@ -12,15 +12,6 @@ export class MovieService {
     const movies = await this.prisma.movie.findMany({
       take: limit,
       skip,
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        price: true,
-        releaseDate: true,
-        ageRating: true,
-        poster: true,
-      },
     });
 
     return {
