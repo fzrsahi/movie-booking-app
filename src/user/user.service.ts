@@ -10,8 +10,11 @@ export class UserService {
       where: {
         id: user.id,
       },
+      include: {
+        balance: true,
+      },
     });
 
-    return user;
+    return userData;
   }
 }

@@ -16,6 +16,16 @@ model User {
   age       Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  balance   Balance?
+
+  @@map("Users")
+}
+
+model Balance {
+  id      String @id @default(uuid())
+  balance Int
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String @unique
 }
 
 model Movie {
@@ -26,4 +36,6 @@ model Movie {
   releaseDate String
   ageRating   Int
   poster      String
+
+  // @@map("Movies")
 }
