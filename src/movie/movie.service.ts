@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { throwError } from 'rxjs';
+
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -26,6 +26,9 @@ export class MovieService {
     const movie = await this.prisma.movie.findFirst({
       where: {
         id: movieId,
+      },
+      include: {
+        seats: true,
       },
     });
 

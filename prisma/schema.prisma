@@ -17,6 +17,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   balance   Balance?
+  seats     Seats[]
 
   @@map("Users")
 }
@@ -29,13 +30,25 @@ model Balance {
 }
 
 model Movie {
-  id          Int    @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   title       String
   description String
   price       Int
   releaseDate String
   ageRating   Int
   poster      String
+  seats       Seats[]
 
-  // @@map("Movies")
+  @@map("Movies")
+}
+
+model Seats {
+  id         String  @id @default(uuid())
+  seatNumber Int
+  book       Boolean
+  Movie      Movie   @relation(fields: [movieId], references: [id])
+  movieId    Int
+
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
 }
