@@ -26,6 +26,11 @@ export class AuthService {
           birth: dto.birth,
           age,
           hash,
+          balance: {
+            create: {
+              balance: 0,
+            },
+          },
         },
       });
 
