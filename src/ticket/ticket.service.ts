@@ -25,6 +25,15 @@ export class TicketService {
   }
 
   async bookSeats(user: User, movieId: number, seats: number[]) {
+    const balanceData = await this.prisma.balance.findUnique({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    const balance = balanceData.balance;
+    console.log({ balance });
+
     const seatsToBook = await this.prisma.seats.findMany({
       where: {
         movieId,
@@ -34,6 +43,7 @@ export class TicketService {
         Movie: {
           select: {
             ageRating: true,
+            price: true,
           },
         },
       },
@@ -41,9 +51,14 @@ export class TicketService {
 
     const movieRatings = seatsToBook.map((seat) => seat.Movie.ageRating);
 
+    const seatPrice = seatsToBook.map((seat) => seat.Movie.price);
+    const totalSeatPrice = seatPrice.reduce((acc, curr) => acc + curr, 0);
+
+    console.log({ totalSeatPrice, seatPrice });
+
     if (user.age < movieRatings[0]) {
       throw new BadRequestException(
-        'Failed to book seats. Age requirement not met.ordersorders',
+        'Failed to book seats. Age requirement not met',
       );
     }
 
@@ -55,8 +70,14 @@ export class TicketService {
       );
     }
 
+    if (balance < totalSeatPrice) {
+      throw new BadRequestException(
+        'Failed to book seats. Insufficient balance.',
+      );
+    }
+
     try {
-      const updateSeats = await this.prisma.seats.updateMany({
+      await this.prisma.seats.updateMany({
         where: {
           movieId,
           seatNumber: {
@@ -70,10 +91,22 @@ export class TicketService {
         },
       });
 
+      const updateBalance = balance - totalSeatPrice;
+      await this.prisma.balance.update({
+        where: {
+          userId: user.id,
+        },
+        data: {
+          balance: updateBalance,
+        },
+      });
+
       return {
         success: true,
-        message: 'Success Book Ticket',
+        message: `Success Book Ticket Number ${seats}`,
         movieId,
+        totalPrice: totalSeatPrice,
+        currentBalance: updateBalance,
         seatsBook: seats,
       };
     } catch (error) {

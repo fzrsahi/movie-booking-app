@@ -58,11 +58,13 @@ model Seats {
 }
 
 model Orders {
-  id      String  @id @default(uuid())
-  User    User?   @relation(fields: [userId], references: [id])
-  userId  String?
-  Movie   Movie?  @relation(fields: [movieId], references: [id])
-  movieId Int?
-  Seats   Seats?  @relation(fields: [seatsId], references: [id])
-  seatsId String?
+  id        String   @id @default(uuid())
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  Movie     Movie?   @relation(fields: [movieId], references: [id])
+  movieId   Int?
+  Seats     Seats?   @relation(fields: [seatsId], references: [id])
+  seatsId   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
