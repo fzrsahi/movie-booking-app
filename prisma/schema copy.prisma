@@ -1,21 +1,54 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL_PRODUCTION")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  email     String   @unique
+  birth     String
+  hash      String
+  age       Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  balance   Balance?
+  seats     Seats[]
+
+  @@map("Users")
+}
+
+model Balance {
+  id      String @id @default(uuid())
+  balance Int
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String @unique
 }
 
 model Movie {
-  uuid        Int    @id @map("_id")
+  id          Int     @id @default(autoincrement())
   title       String
   description String
+  price       Int
   releaseDate String
-  ageRating   String
-  price       String
+  ageRating   Int
   poster      String
+  seats       Seats[]
+
+  @@map("Movies")
+}
+
+model Seats {
+  id         String  @id @default(uuid())
+  seatNumber Int
+  book       Boolean
+  Movie      Movie   @relation(fields: [movieId], references: [id])
+  movieId    Int
+
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
 }
