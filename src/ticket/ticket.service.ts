@@ -43,7 +43,7 @@ export class TicketService {
 
     if (user.age < movieRatings[0]) {
       throw new BadRequestException(
-        'Failed to book seats. Age requirement not met.',
+        'Failed to book seats. Age requirement not met.ordersorders',
       );
     }
 

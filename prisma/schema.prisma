@@ -18,6 +18,7 @@ model User {
   updatedAt DateTime @updatedAt
   balance   Balance?
   seats     Seats[]
+  orders    Orders[]
 
   @@map("Users")
 }
@@ -30,7 +31,7 @@ model Balance {
 }
 
 model Movie {
-  id          Int     @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   title       String
   description String
   price       Int
@@ -38,6 +39,7 @@ model Movie {
   ageRating   Int
   poster      String
   seats       Seats[]
+  orders      Orders[]
 
   @@map("Movies")
 }
@@ -51,4 +53,16 @@ model Seats {
 
   User   User?   @relation(fields: [userId], references: [id])
   userId String?
+
+  order Orders[]
+}
+
+model Orders {
+  id      String  @id @default(uuid())
+  User    User?   @relation(fields: [userId], references: [id])
+  userId  String?
+  Movie   Movie?  @relation(fields: [movieId], references: [id])
+  movieId Int?
+  Seats   Seats?  @relation(fields: [seatsId], references: [id])
+  seatsId String?
 }
