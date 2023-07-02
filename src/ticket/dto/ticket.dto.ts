@@ -1,6 +1,7 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsArray, IsNotEmpty } from 'class-validator';
 
 export class TicketDto {
   @IsNotEmpty()
-  seatNumber: number | number[];
+  @IsArray()
+  seatNumber: number[];
 }

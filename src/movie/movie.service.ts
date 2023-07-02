@@ -27,9 +27,6 @@ export class MovieService {
       where: {
         id: movieId,
       },
-      include: {
-        seats: true,
-      },
     });
 
     if (!movie) throw new NotFoundException();
