@@ -30,11 +30,26 @@ export class TicketService {
         movieId,
         seatNumber: { in: seats },
       },
+      include: {
+        Movie: {
+          select: {
+            ageRating: true,
+          },
+        },
+      },
     });
+
+    const movieRatings = seatsToBook.map((seat) => seat.Movie.ageRating);
+
+    if (user.age < movieRatings[0]) {
+      throw new BadRequestException(
+        'Failed to book seats. Age requirement not met.',
+      );
+    }
 
     const alreadyBookedSeats = seatsToBook.filter((seat) => seat.book === true);
 
-    if (alreadyBookedSeats) {
+    if (alreadyBookedSeats.length) {
       throw new BadRequestException(
         'Failed to book seats. Some seats are already booked.',
       );
