@@ -101,6 +101,16 @@ export class TicketService {
         },
       });
 
+      await this.prisma.orders.create({
+        data: {
+          userId: user.id,
+          movieId,
+          seats,
+          total: totalSeatPrice,
+          cancel: false,
+        },
+      });
+
       return {
         success: true,
         message: `Success Book Ticket Number ${seats}`,

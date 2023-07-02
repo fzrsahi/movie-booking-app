@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { BalanceModule } from './balance/balance.module';
 import { TicketModule } from './ticket/ticket.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { TicketModule } from './ticket/ticket.module';
     UserModule,
     BalanceModule,
     TicketModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
