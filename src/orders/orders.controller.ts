@@ -1,8 +1,18 @@
-import { Controller, Delete, Get, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { User } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
 import { OrdersService } from './orders.service';
+import { cancelOrderDto } from './dto';
 
 @UseGuards(JwtGuard)
 @Controller('orders')
@@ -15,7 +25,7 @@ export class OrdersController {
   }
 
   @Delete('cancel')
-  cancelOrder(@GetUser() user: User) {
-    return this.orderService.cancelOrder(user);
+  cancelOrder(@GetUser() user: User, @Body() ticketsId: cancelOrderDto) {
+    return this.orderService.cancelOrder(user, ticketsId);
   }
 }

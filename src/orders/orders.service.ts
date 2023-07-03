@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { cancelOrderDto } from './dto';
 
 @Injectable()
 export class OrdersService {
@@ -35,7 +36,10 @@ export class OrdersService {
     };
   }
 
-  async cancelOrder(user: User) {
-    console.log(user);
+  async cancelOrder(user: User, ticketsId: cancelOrderDto) {
+    console.log({
+      user: user.id,
+      ticketsId,
+    });
   }
 }

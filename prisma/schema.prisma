@@ -9,6 +9,7 @@ datasource db {
 
 model User {
   id        String   @id @default(uuid())
+  name      String
   username  String   @unique
   email     String   @unique
   birth     String
@@ -28,6 +29,9 @@ model Balance {
   balance Int
   user    User   @relation(fields: [userId], references: [id])
   userId  String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Movie {
@@ -41,6 +45,9 @@ model Movie {
   seats       Seats[]
   orders      Orders[]
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("Movies")
 }
 
@@ -51,8 +58,10 @@ model Seats {
   Movie      Movie   @relation(fields: [movieId], references: [id])
   movieId    Int
 
-  User   User?   @relation(fields: [userId], references: [id])
-  userId String?
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  createdAt DateTime @default(now())
+  bookAt    DateTime @updatedAt
 }
 
 model Orders {
