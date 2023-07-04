@@ -30,6 +30,10 @@ export class TicketController {
     @Param('id', ParseIntPipe) movieId,
     @Body() dto: TicketDto,
   ) {
+    if (!dto.seatNumber.length) {
+      throw new BadRequestException('Array Tidak Boleh Kosong');
+    }
+
     if (dto.seatNumber.length > 6) {
       throw new BadRequestException(
         'Sorry, you can only order a maximum of 6 tickets',

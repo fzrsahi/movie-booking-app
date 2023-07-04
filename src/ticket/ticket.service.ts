@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { TicketDto } from './dto';
@@ -57,22 +62,37 @@ export class TicketService {
     console.log({ totalSeatPrice, seatPrice });
 
     if (user.age < movieRatings[0]) {
-      throw new BadRequestException(
-        'Failed to book seats. Age requirement not met',
+      throw new HttpException(
+        {
+          success: false,
+          errorMessage: 'Failed to book seats. Age requirement not met',
+          ageError: true,
+        },
+        HttpStatus.BAD_REQUEST,
       );
     }
 
     const alreadyBookedSeats = seatsToBook.filter((seat) => seat.book === true);
 
     if (alreadyBookedSeats.length) {
-      throw new BadRequestException(
-        'Failed to book seats. Some seats are already booked.',
+      throw new HttpException(
+        {
+          success: false,
+          errorMessage: 'Failed to book seats. Some seats are already booked.',
+          seatsFullError: true,
+        },
+        HttpStatus.BAD_REQUEST,
       );
     }
 
     if (balance < totalSeatPrice) {
-      throw new BadRequestException(
-        'Failed to book seats. Insufficient balance.',
+      throw new HttpException(
+        {
+          success: false,
+          errorMessage: 'Failed to book seats. Insufficient balance',
+          insufficientBalanceError: true,
+        },
+        HttpStatus.BAD_REQUEST,
       );
     }
 
@@ -107,7 +127,6 @@ export class TicketService {
           movieId,
           seats,
           total: totalSeatPrice,
-          cancel: false,
         },
       });
 

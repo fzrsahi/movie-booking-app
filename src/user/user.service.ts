@@ -23,6 +23,7 @@ export class UserService {
       const ticketsData = await this.prisma.seats.findMany({
         where: {
           userId: user.id,
+          book: true,
         },
         include: {
           Movie: {

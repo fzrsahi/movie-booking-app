@@ -61,7 +61,9 @@ model Seats {
   User      User?    @relation(fields: [userId], references: [id])
   userId    String?
   createdAt DateTime @default(now())
-  bookAt    DateTime @updatedAt
+  updatedAt DateTime @updatedAt
+
+  cancelAt DateTime?
 }
 
 model Orders {
@@ -75,7 +77,6 @@ model Orders {
 
   total Int
 
-  cancel    Boolean?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

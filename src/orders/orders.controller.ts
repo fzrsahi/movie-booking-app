@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
@@ -24,8 +25,16 @@ export class OrdersController {
     return this.orderService.getOrdersByUserId(user);
   }
 
-  @Delete('cancel')
-  cancelOrder(@GetUser() user: User, @Body() ticketsId: cancelOrderDto) {
-    return this.orderService.cancelOrder(user, ticketsId);
+  @Delete('cancel/:id')
+  cancelOrder(
+    @GetUser() user: User,
+    @Body() ticketsId: cancelOrderDto,
+    @Param('id', ParseIntPipe) movieId: number,
+  ) {
+    return this.orderService.cancelOrder(
+      user,
+      ticketsId.ticketsSeatNumber,
+      movieId,
+    );
   }
 }
