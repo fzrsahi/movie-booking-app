@@ -67,6 +67,7 @@ export class TicketService {
           success: false,
           errorMessage: 'Failed to book seats. Age requirement not met',
           ageError: true,
+          statusCode: 400,
         },
         HttpStatus.BAD_REQUEST,
       );
@@ -80,6 +81,7 @@ export class TicketService {
           success: false,
           errorMessage: 'Failed to book seats. Some seats are already booked.',
           seatsFullError: true,
+          statusCode: 400,
         },
         HttpStatus.BAD_REQUEST,
       );
@@ -91,6 +93,7 @@ export class TicketService {
           success: false,
           errorMessage: 'Failed to book seats. Insufficient balance',
           insufficientBalanceError: true,
+          statusCode: 400,
         },
         HttpStatus.BAD_REQUEST,
       );
