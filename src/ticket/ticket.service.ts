@@ -26,7 +26,11 @@ export class TicketService {
       },
     });
 
-    return seats;
+    return {
+      statusCode: 200,
+      message: `Success Get MovieId ${movieId} seats`,
+      seats,
+    };
   }
 
   async bookSeats(user: User, movieId: number, seats: number[]) {
