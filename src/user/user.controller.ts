@@ -4,13 +4,18 @@ import { JwtGuard } from 'src/auth/guard';
 import { GetUser } from 'src/auth/decorator';
 import { User } from '@prisma/client';
 
+@UseGuards(JwtGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(JwtGuard)
   @Get('me')
   getCurrentUserLogin(@GetUser() user: User) {
     return this.userService.getCurrentUserLogin(user);
+  }
+
+  @Get('tickets')
+  getTickets(@GetUser() user: User) {
+    return this.userService.getTickets(user);
   }
 }

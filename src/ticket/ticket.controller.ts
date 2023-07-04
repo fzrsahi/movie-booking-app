@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   UseGuards,
   Body,
+  BadRequestException,
 } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { JwtGuard } from 'src/auth/guard';
@@ -13,7 +14,7 @@ import { GetUser } from 'src/auth/decorator';
 import { User } from '@prisma/client';
 import { TicketDto } from './dto';
 
-@Controller('ticket')
+@Controller('tickets')
 export class TicketController {
   constructor(private readonly ticketService: TicketService) {}
 
@@ -27,8 +28,13 @@ export class TicketController {
   bookSeat(
     @GetUser() user: User,
     @Param('id', ParseIntPipe) movieId,
-    @Body() seatNumber: TicketDto,
+    @Body() dto: TicketDto,
   ) {
-    console.log({ user, movieId, seatNumber });
+    if (dto.seatNumber.length > 6) {
+      throw new BadRequestException(
+        'Sorry, you can only order a maximum of 6 tickets',
+      );
+    }
+    return this.ticketService.bookSeats(user, movieId, dto.seatNumber);
   }
 }

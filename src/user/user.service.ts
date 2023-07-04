@@ -14,7 +14,33 @@ export class UserService {
         balance: true,
       },
     });
-
+    delete userData.hash;
     return userData;
+  }
+
+  async getTickets(user: User) {
+    try {
+      const ticketsData = await this.prisma.seats.findMany({
+        where: {
+          userId: user.id,
+        },
+        include: {
+          Movie: {
+            select: {
+              title: true,
+            },
+          },
+        },
+      });
+
+      return {
+        success: true,
+        message: `Success Fetch ${user.username} Data`,
+        total: ticketsData.length,
+        data: ticketsData,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 }
