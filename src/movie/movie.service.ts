@@ -15,7 +15,7 @@ export class MovieService {
     });
 
     return {
-      success: true,
+      statusCode: 200,
       length: movies.length,
       total: totalCount,
       data: movies,

@@ -28,7 +28,7 @@ export class BalanceService {
     const balanceInRp = this.toRupiah(balance.balance);
 
     return {
-      success: true,
+      statusCode: 200,
       message: 'Success Get User Balance',
       balance: balanceInRp,
       data: balance,
@@ -64,7 +64,7 @@ export class BalanceService {
       const currentBalance = this.toRupiah(updateBalance.balance);
 
       return {
-        success: true,
+        statusCode: 201,
         message: `Success Add ${rupiah} to your balance!`,
         addedBalance: rupiah,
         currentBalance,
@@ -123,7 +123,7 @@ export class BalanceService {
       const currentBalanceInRp = this.toRupiah(balanceWithdrawal.balance);
 
       return {
-        success: true,
+        statusCode: 201,
         message: `Successfully Withdraw Balance by amount ${withdrawalAmountInRp}`,
         currentBalance: currentBalanceInRp,
         messageWarning,

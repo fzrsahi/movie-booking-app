@@ -39,7 +39,7 @@ export class AuthService {
 
       delete user.hash;
       return {
-        success: true,
+        statusCode: 201,
         message: 'User Created',
         user,
       };
@@ -70,7 +70,7 @@ export class AuthService {
       delete user.hash;
       const token = await this.signToken(user.id, user.email);
       return {
-        success: true,
+        statusCode: 200,
         message: 'Log In!',
         user,
         token,

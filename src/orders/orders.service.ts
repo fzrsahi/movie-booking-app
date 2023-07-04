@@ -26,7 +26,7 @@ export class OrdersService {
     });
 
     return {
-      success: true,
+      statusCode: 200,
       message: `Success Get All Of ${user.id} Order History `,
       length: orders.length,
       orderHistory: orders,
@@ -107,7 +107,7 @@ export class OrdersService {
       });
 
       return {
-        success: true,
+        statusCode: 201,
         message: `Success Cancel Seats Number ${seatsNumber}`,
       };
     } catch (error) {

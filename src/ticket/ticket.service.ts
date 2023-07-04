@@ -64,10 +64,9 @@ export class TicketService {
     if (user.age < movieRatings[0]) {
       throw new HttpException(
         {
-          success: false,
-          errorMessage: 'Failed to book seats. Age requirement not met',
-          ageError: true,
           statusCode: 400,
+          message: 'Failed to book seats. Age requirement not met',
+          ageError: true,
         },
         HttpStatus.BAD_REQUEST,
       );
@@ -78,10 +77,9 @@ export class TicketService {
     if (alreadyBookedSeats.length) {
       throw new HttpException(
         {
-          success: false,
-          errorMessage: 'Failed to book seats. Some seats are already booked.',
-          seatsFullError: true,
           statusCode: 400,
+          message: 'Failed to book seats. Some seats are already booked.',
+          seatsFullError: true,
         },
         HttpStatus.BAD_REQUEST,
       );
@@ -90,10 +88,9 @@ export class TicketService {
     if (balance < totalSeatPrice) {
       throw new HttpException(
         {
-          success: false,
-          errorMessage: 'Failed to book seats. Insufficient balance',
-          insufficientBalanceError: true,
           statusCode: 400,
+          message: 'Failed to book seats. Insufficient balance',
+          insufficientBalanceError: true,
         },
         HttpStatus.BAD_REQUEST,
       );
@@ -134,7 +131,7 @@ export class TicketService {
       });
 
       return {
-        success: true,
+        statusCode: 201,
         message: `Success Book Ticket Number ${seats}`,
         movieId,
         totalPrice: totalSeatPrice,
