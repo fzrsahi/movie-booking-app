@@ -132,11 +132,15 @@ export class TicketService {
         },
       });
 
+      const seatsId = seatsToBook.map((seatId) => {
+        return seatId.id;
+      });
+
       await this.prisma.seats.deleteMany({
         where: {
-          userId: user.id,
-          movieId,
-          book: false,
+          id: {
+            in: seatsId,
+          },
         },
       });
 
