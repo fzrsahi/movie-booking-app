@@ -8,19 +8,6 @@ export class OrdersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getOrdersByUserId(user: User) {
-    // const orders: any = await this.prisma.seats.findMany({
-    //   where: {
-    //     userId: user.id,
-    //   },
-    //   include: {
-    //     Movie: {
-    //       select: {
-    //         title: true,
-    //       },
-    //     },
-    //   },
-    // });
-
     const orders = await this.prisma.orders.findMany({
       where: {
         userId: user.id,
@@ -116,6 +103,24 @@ export class OrdersService {
       return {
         statusCode: 201,
         message: `Success Cancel Seats Number ${seatsNumber}`,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getOrderById(user: User, orderId: string) {
+    try {
+      const order = await this.prisma.orders.findUnique({
+        where: {
+          id: orderId,
+        },
+      });
+
+      return {
+        statusCode: 200,
+        message: `Success Get ${user.name} order ${orderId} details`,
+        order,
       };
     } catch (error) {
       throw error;

@@ -20,6 +20,11 @@ import { cancelOrderDto } from './dto';
 export class OrdersController {
   constructor(private readonly orderService: OrdersService) {}
 
+  @Get(':id')
+  getOrderById(@GetUser() user, @Param('id') orderId: string) {
+    return this.orderService.getOrderById(user, orderId);
+  }
+
   @Get()
   getOrderByUserId(@GetUser() user: User) {
     return this.orderService.getOrdersByUserId(user);

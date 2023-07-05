@@ -139,7 +139,7 @@ export class TicketService {
         },
       });
 
-      await this.prisma.orders.create({
+      const orders = await this.prisma.orders.create({
         data: {
           userId: user.id,
           movieId,
@@ -156,12 +156,15 @@ export class TicketService {
         },
       });
 
+      delete orders.movieId;
+
       return {
         statusCode: 201,
         message: `Success Book Ticket Number ${seats}`,
         movieId,
         totalPrice: totalSeatPrice,
         currentBalance: updateBalance,
+        orders: orders,
         seatsBook: seats,
       };
     } catch (error) {
