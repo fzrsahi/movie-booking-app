@@ -36,6 +36,13 @@ export class BalanceService {
   }
 
   async addBalance(dto: BalanceDto, user: User) {
+    const maxAllowedValue = Number.MAX_SAFE_INTEGER;
+    if (dto.balance > maxAllowedValue) {
+      throw new BadRequestException({
+        statusCode: 400,
+        message: `Value cannot exceed ${maxAllowedValue}`,
+      });
+    }
     try {
       const balance = await this.prisma.balance.findUnique({
         where: {
