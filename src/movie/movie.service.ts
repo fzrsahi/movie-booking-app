@@ -31,6 +31,10 @@ export class MovieService {
 
     if (!movie) throw new NotFoundException();
     delete movie.id;
-    return movie;
+    return {
+      statusCode: 200,
+      message: `Success Get Movie id : ${movieId} Details`,
+      movie,
+    };
   }
 }
