@@ -136,6 +136,7 @@ export class TicketService {
         where: {
           userId: user.id,
           movieId,
+          book: false,
         },
       });
 
