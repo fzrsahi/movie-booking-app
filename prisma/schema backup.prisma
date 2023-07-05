@@ -49,6 +49,7 @@ model Movie {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // @@fulltext([title])
   @@map("Movies")
 }
 
@@ -64,10 +65,6 @@ model Seats {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  bookAt DateTime?
-
-  orders Orders[]
-
   cancelAt DateTime?
 }
 
@@ -77,8 +74,7 @@ model Orders {
   userId  String?
   Movie   Movie?  @relation(fields: [movieId], references: [id])
   movieId Int?
-
-  seats Seats[]
+  seats   Int[]
 
   total Int
 

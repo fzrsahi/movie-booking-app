@@ -37,7 +37,7 @@ export class UserService {
       return {
         statusCode: 200,
         message: `Success Fetch ${user.username} Data`,
-        total: ticketsData.length,
+        length: ticketsData.length,
         data: ticketsData,
       };
     } catch (error) {

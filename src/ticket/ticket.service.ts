@@ -41,7 +41,6 @@ export class TicketService {
     });
 
     const balance = balanceData.balance;
-    console.log({ balance });
 
     const seatsToBook = await this.prisma.seats.findMany({
       where: {
@@ -62,8 +61,6 @@ export class TicketService {
 
     const seatPrice = seatsToBook.map((seat) => seat.Movie.price);
     const totalSeatPrice = seatPrice.reduce((acc, curr) => acc + curr, 0);
-
-    console.log({ totalSeatPrice, seatPrice });
 
     if (user.age < movieRatings[0]) {
       throw new HttpException(
@@ -100,6 +97,16 @@ export class TicketService {
       );
     }
 
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
+    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
+
     try {
       await this.prisma.seats.updateMany({
         where: {
@@ -125,11 +132,26 @@ export class TicketService {
         },
       });
 
+      await this.prisma.seats.deleteMany({
+        where: {
+          userId: user.id,
+          movieId,
+        },
+      });
+
       await this.prisma.orders.create({
         data: {
           userId: user.id,
           movieId,
-          seats,
+          seats: {
+            create: seats.map((seatBook) => ({
+              seatNumber: seatBook,
+              book: true,
+              movieId: movieId,
+              userId: user.id,
+              bookAt: formattedDate,
+            })),
+          },
           total: totalSeatPrice,
         },
       });

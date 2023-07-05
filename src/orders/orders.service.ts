@@ -8,16 +8,25 @@ export class OrdersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getOrdersByUserId(user: User) {
-    const orders: any = await this.prisma.seats.findMany({
+    // const orders: any = await this.prisma.seats.findMany({
+    //   where: {
+    //     userId: user.id,
+    //   },
+    //   include: {
+    //     Movie: {
+    //       select: {
+    //         title: true,
+    //       },
+    //     },
+    //   },
+    // });
+
+    const orders = await this.prisma.orders.findMany({
       where: {
         userId: user.id,
       },
       include: {
-        Movie: {
-          select: {
-            title: true,
-          },
-        },
+        seats: true,
       },
     });
 
@@ -62,8 +71,6 @@ export class OrdersService {
       }
     });
 
-    console.log(seats);
-
     const movie = await this.prisma.movie.findFirst({
       where: {
         id: movieId,
@@ -80,7 +87,6 @@ export class OrdersService {
     const seatsPrices = movie.price * seatsNumber.length;
 
     const newBalance = currentBalance + seatsPrices;
-    console.log({ currentBalance, seatsPrices });
 
     try {
       await this.prisma.seats.updateMany({
@@ -94,6 +100,7 @@ export class OrdersService {
         data: {
           book: false,
           cancelAt: formattedDate,
+          userId: null,
         },
       });
 
