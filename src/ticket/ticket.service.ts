@@ -155,9 +155,10 @@ export class TicketService {
           },
           total: totalSeatPrice,
         },
+        select: {
+          id: true,
+        },
       });
-
-      delete orders.movieId;
 
       return {
         statusCode: 201,
@@ -165,7 +166,7 @@ export class TicketService {
         movieId,
         totalPrice: totalSeatPrice,
         currentBalance: updateBalance,
-        orders: orders,
+        ordersId: orders,
         seatsBook: seats,
       };
     } catch (error) {

@@ -115,6 +115,11 @@ export class OrdersService {
         where: {
           id: orderId,
         },
+        include: {
+          User: true,
+          Movie: true,
+          seats: true,
+        },
       });
 
       return {
