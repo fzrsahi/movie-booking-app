@@ -15,7 +15,11 @@ export class UserService {
       },
     });
     delete userData.hash;
-    return userData;
+    return {
+      statusCode: 200,
+      message: `Success Fetch ${user.username} data `,
+      data: userData,
+    };
   }
 
   async getTickets(user: User) {
