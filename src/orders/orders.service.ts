@@ -14,6 +14,7 @@ export class OrdersService {
       },
       include: {
         seats: true,
+        Movie: true,
       },
     });
 
