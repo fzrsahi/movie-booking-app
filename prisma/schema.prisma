@@ -19,8 +19,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   balance   Balance?
-  seats     Seats[]
-  orders    Orders[]
+
+  orders  Orders[]
+  Tickets Tickets[]
 
   @@map("Users")
 }
@@ -55,20 +56,14 @@ model Movie {
 model Seats {
   id         String  @id @default(uuid())
   seatNumber Int
-  book       Boolean
+  isBook     Boolean
   Movie      Movie   @relation(fields: [movieId], references: [id])
   movieId    Int
 
-  User      User?    @relation(fields: [userId], references: [id])
-  userId    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  bookAt DateTime?
-
-  orders Orders[]
-
+  bookAt   DateTime?
   cancelAt DateTime?
+
+  tickets Tickets[]
 }
 
 model Orders {
@@ -78,10 +73,22 @@ model Orders {
   Movie   Movie?  @relation(fields: [movieId], references: [id])
   movieId Int?
 
-  seats Seats[]
-
   total Int
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  ticket    Tickets[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Tickets {
+  id String @id @default(uuid())
+
+  Orders   Orders? @relation(fields: [ordersId], references: [id])
+  ordersId String?
+
+  isCancel Boolean?
+
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
+  Seats  Seats[]
 }

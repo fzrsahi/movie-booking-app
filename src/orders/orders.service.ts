@@ -8,13 +8,13 @@ export class OrdersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getOrdersByUserId(user: User) {
-    const orders = await this.prisma.orders.findMany({
+    const orders = await this.prisma.tickets.findMany({
       where: {
         userId: user.id,
       },
       include: {
-        seats: true,
-        Movie: true,
+        Orders: true,
+        Seats: true,
       },
     });
 
@@ -42,17 +42,17 @@ export class OrdersService {
     const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
 
     const seats = await this.prisma.seats.findMany({
-      where: {
-        userId: user.id,
-        seatNumber: {
-          in: seatsNumber,
-        },
-        movieId,
-      },
+      // where: {
+      //   userId: user.id,
+      //   seatNumber: {
+      //     in: seatsNumber,
+      //   },
+      //   movieId,
+      // },
     });
 
     seats.forEach((seat) => {
-      if (!seat.book) {
+      if (!seat.isBook) {
         throw new BadRequestException(
           'Sorry, the following tickets have been canceled',
         );
@@ -73,24 +73,23 @@ export class OrdersService {
 
     const currentBalance = userData.balance;
     const seatsPrices = movie.price * seatsNumber.length;
-
     const newBalance = currentBalance + seatsPrices;
 
     try {
-      await this.prisma.seats.updateMany({
-        where: {
-          userId: user.id,
-          seatNumber: {
-            in: seatsNumber,
-          },
-          movieId,
-        },
-        data: {
-          book: false,
-          cancelAt: formattedDate,
-          userId: null,
-        },
-      });
+      // await this.prisma.seats.updateMany({
+      //   where: {
+      //     userId: user.id,
+      //     seatNumber: {
+      //       in: seatsNumber,
+      //     },
+      //     movieId,
+      //   },
+      //   data: {
+      //     isBook: false,
+      //     cancelAt: formattedDate,
+      //     userId: null,
+      //   },
+      // });
 
       await this.prisma.balance.update({
         where: {
@@ -119,7 +118,6 @@ export class OrdersService {
         include: {
           User: true,
           Movie: true,
-          seats: true,
         },
       });
 

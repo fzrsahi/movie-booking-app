@@ -33,144 +33,247 @@ export class TicketService {
     };
   }
 
+  // async bookSeats(user: User, movieId: number, seats: number[]) {
+  //   const balanceData = await this.prisma.balance.findUnique({
+  //     where: {
+  //       userId: user.id,
+  //     },
+  //   });
+
+  //   const balance = balanceData.balance;
+
+  //   const seatsToBook = await this.prisma.seats.findMany({
+  //     where: {
+  //       movieId,
+  //       seatNumber: { in: seats },
+  //     },
+  //     include: {
+  //       Movie: {
+  //         select: {
+  //           ageRating: true,
+  //           price: true,
+  //         },
+  //       },
+  //     },
+  //   });
+
+  //   const movieRatings = seatsToBook.map((seat) => seat.Movie.ageRating);
+
+  //   const seatPrice = seatsToBook.map((seat) => seat.Movie.price);
+  //   const totalSeatPrice = seatPrice.reduce((acc, curr) => acc + curr, 0);
+
+  //   if (user.age < movieRatings[0]) {
+  //     throw new HttpException(
+  //       {
+  //         statusCode: 400,
+  //         message: 'Failed to book seats. Age requirement not met',
+  //         ageError: true,
+  //       },
+  //       HttpStatus.BAD_REQUEST,
+  //     );
+  //   }
+
+  //   const alreadyBookedSeats = seatsToBook.filter((seat) => seat.book === true);
+
+  //   if (alreadyBookedSeats.length) {
+  //     throw new HttpException(
+  //       {
+  //         statusCode: 400,
+  //         message: 'Failed to book seats. Some seats are already booked.',
+  //         seatsFullError: true,
+  //       },
+  //       HttpStatus.BAD_REQUEST,
+  //     );
+  //   }
+
+  //   if (balance < totalSeatPrice) {
+  // throw new HttpException(
+  //   {
+  //     statusCode: 400,
+  //     message: 'Failed to book seats. Insufficient balance',
+  //     insufficientBalanceError: true,
+  //   },
+  //   HttpStatus.BAD_REQUEST,
+  // );
+  //   }
+
+  //   const date = new Date();
+  //   const year = date.getFullYear();
+  //   const month = String(date.getMonth() + 1).padStart(2, '0');
+  //   const day = String(date.getDate()).padStart(2, '0');
+  //   const hours = String(date.getHours()).padStart(2, '0');
+  //   const minutes = String(date.getMinutes()).padStart(2, '0');
+  //   const seconds = String(date.getSeconds()).padStart(2, '0');
+  //   const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
+  //   const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
+
+  //   try {
+  //     await this.prisma.seats.updateMany({
+  //       where: {
+  //         movieId,
+  //         seatNumber: {
+  //           in: seats,
+  //         },
+  //         book: false,
+  //       },
+  //       data: {
+  //         book: true,
+  //         userId: user.id,
+  //       },
+  //     });
+
+  //     const updateBalance = balance - totalSeatPrice;
+  //     await this.prisma.balance.update({
+  //       where: {
+  //         userId: user.id,
+  //       },
+  //       data: {
+  //         balance: updateBalance,
+  //       },
+  //     });
+
+  //     const seatsId = seatsToBook.map((seatId) => {
+  //       return seatId.id;
+  //     });
+
+  //     await this.prisma.seats.deleteMany({
+  //       where: {
+  //         id: {
+  //           in: seatsId,
+  //         },
+  //       },
+  //     });
+
+  //     const orders = await this.prisma.orders.create({
+  //       data: {
+  //         userId: user.id,
+  //         movieId,
+  //         seats: {
+  // create: seats.map((seatBook) => ({
+  //   seatNumber: seatBook,
+  //   book: true,
+  //   movieId: movieId,
+  //   userId: user.id,
+  //   bookAt: formattedDate,
+  // })),
+  //         },
+  //         total: totalSeatPrice,
+  //       },
+  //       select: {
+  //         id: true,
+  //       },
+  //     });
+
+  // return {
+  //   statusCode: 201,
+  //   message: `Success Book Ticket Number ${seats}`,
+  //   movieId,
+  //   totalPrice: totalSeatPrice,
+  //   currentBalance: updateBalance,
+  //   ordersId: orders,
+  //   seatsBook: seats,
+  // };
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
   async bookSeats(user: User, movieId: number, seats: number[]) {
-    const balanceData = await this.prisma.balance.findUnique({
+    const userData = await this.prisma.user.findUnique({
       where: {
-        userId: user.id,
+        id: user.id,
+      },
+      select: {
+        id: true,
+        age: true,
+        balance: true,
       },
     });
 
-    const balance = balanceData.balance;
-
-    const seatsToBook = await this.prisma.seats.findMany({
+    const movieData = await this.prisma.movie.findUnique({
       where: {
-        movieId,
-        seatNumber: { in: seats },
-      },
-      include: {
-        Movie: {
-          select: {
-            ageRating: true,
-            price: true,
-          },
-        },
+        id: movieId,
       },
     });
 
-    const movieRatings = seatsToBook.map((seat) => seat.Movie.ageRating);
+    const userBalance = userData.balance.balance;
+    const userAge = userData.age;
 
-    const seatPrice = seatsToBook.map((seat) => seat.Movie.price);
-    const totalSeatPrice = seatPrice.reduce((acc, curr) => acc + curr, 0);
+    const moviePrice = movieData.price;
+    const movieRating = movieData.ageRating;
 
-    if (user.age < movieRatings[0]) {
+    const totalMoviePrice = moviePrice * seats.length;
+
+    if (userAge < movieRating) {
       throw new HttpException(
         {
           statusCode: 400,
           message: 'Failed to book seats. Age requirement not met',
-          ageError: true,
         },
         HttpStatus.BAD_REQUEST,
       );
     }
 
-    const alreadyBookedSeats = seatsToBook.filter((seat) => seat.book === true);
-
-    if (alreadyBookedSeats.length) {
-      throw new HttpException(
-        {
-          statusCode: 400,
-          message: 'Failed to book seats. Some seats are already booked.',
-          seatsFullError: true,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    if (balance < totalSeatPrice) {
+    if (userBalance < totalMoviePrice) {
       throw new HttpException(
         {
           statusCode: 400,
           message: 'Failed to book seats. Insufficient balance',
-          insufficientBalanceError: true,
         },
         HttpStatus.BAD_REQUEST,
       );
     }
 
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-    const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
-    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
+    const updateBalance = userBalance - totalMoviePrice;
 
     try {
-      await this.prisma.seats.updateMany({
+      const updateUser: any = await this.prisma.user.update({
         where: {
-          movieId,
-          seatNumber: {
-            in: seats,
-          },
-          book: false,
-        },
-        data: {
-          book: true,
-          userId: user.id,
-        },
-      });
-
-      const updateBalance = balance - totalSeatPrice;
-      await this.prisma.balance.update({
-        where: {
-          userId: user.id,
-        },
-        data: {
-          balance: updateBalance,
-        },
-      });
-
-      const seatsId = seatsToBook.map((seatId) => {
-        return seatId.id;
-      });
-
-      await this.prisma.seats.deleteMany({
-        where: {
-          id: {
-            in: seatsId,
-          },
-        },
-      });
-
-      const orders = await this.prisma.orders.create({
-        data: {
-          userId: user.id,
-          movieId,
-          seats: {
-            create: seats.map((seatBook) => ({
-              seatNumber: seatBook,
-              book: true,
-              movieId: movieId,
-              userId: user.id,
-              bookAt: formattedDate,
-            })),
-          },
-          total: totalSeatPrice,
+          id: user.id,
         },
         select: {
-          id: true,
+          orders: {
+            select: {
+              id: true,
+            },
+          },
+        },
+        data: {
+          balance: {
+            update: {
+              balance: updateBalance,
+            },
+          },
+          Tickets: {
+            create: {
+              Seats: {
+                create: seats.map((seatBook) => ({
+                  seatNumber: seatBook,
+                  isBook: true,
+                  movieId: movieId,
+                  bookAt: new Date(),
+                })) as [],
+              },
+              Orders: {
+                create: {
+                  total: totalMoviePrice,
+                  movieId,
+                },
+              },
+            },
+          },
         },
       });
+
+      const ordersId = updateUser.orders[updateUser.orders.length - 1];
 
       return {
         statusCode: 201,
         message: `Success Book Ticket Number ${seats}`,
         movieId,
-        totalPrice: totalSeatPrice,
+        totalPrice: totalMoviePrice,
         currentBalance: updateBalance,
-        ordersId: orders,
+        ordersId,
         seatsBook: seats,
       };
     } catch (error) {

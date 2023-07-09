@@ -24,11 +24,11 @@ async function main() {
 
   console.log(seatsData);
 
-  const seatsSeed = await prisma.seats.createMany({
-    data: seatsData,
-  });
+  // const seatsSeed = await prisma.seats.createMany({
+  //   data: seatsData,
+  // });
 
-  console.log(moviesSeed, seatsSeed);
+  console.log(moviesSeed);
 }
 
 main()

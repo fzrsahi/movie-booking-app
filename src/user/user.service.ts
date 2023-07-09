@@ -24,17 +24,12 @@ export class UserService {
 
   async getTickets(user: User) {
     try {
-      const ticketsData = await this.prisma.seats.findMany({
+      const ticketsData = await this.prisma.tickets.findMany({
         where: {
           userId: user.id,
-          book: true,
         },
         include: {
-          Movie: {
-            select: {
-              title: true,
-            },
-          },
+          Seats: true,
         },
       });
 
