@@ -140,6 +140,7 @@ export class OrdersService {
               Seats: true,
               isCancel: true,
               cancelAt: true,
+              id: true,
             },
           },
         },
