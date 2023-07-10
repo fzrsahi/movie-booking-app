@@ -135,7 +135,13 @@ export class OrdersService {
         include: {
           User: true,
           Movie: true,
-          ticket: true,
+          ticket: {
+            select: {
+              Seats: true,
+              isCancel: true,
+              cancelAt: true,
+            },
+          },
         },
       });
 
