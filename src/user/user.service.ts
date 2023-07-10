@@ -30,7 +30,11 @@ export class UserService {
           isCancel: false,
         },
         include: {
-          Seats: true,
+          Seats: {
+            include: {
+              Movie: true,
+            },
+          },
         },
       });
 
@@ -50,7 +54,17 @@ export class UserService {
       where: {
         id: ticketsId,
       },
+      include: {
+        Seats: {
+          include: {
+            Movie: true,
+          },
+        },
+        User: true,
+      },
     });
+
+    delete tickets.User.hash;
 
     return {
       statusCode: 200,
