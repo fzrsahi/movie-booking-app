@@ -22,6 +22,8 @@ export class OrdersService {
         ticket: {
           select: {
             Seats: true,
+            isCancel: true,
+            cancelAt: true,
           },
         },
         Movie: {
@@ -133,6 +135,7 @@ export class OrdersService {
         include: {
           User: true,
           Movie: true,
+          ticket: true,
         },
       });
 
