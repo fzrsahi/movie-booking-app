@@ -29,7 +29,7 @@ export class TicketService {
     return {
       statusCode: 200,
       message: `Success Get MovieId ${movieId} seats`,
-      seats,
+      data: seats,
     };
   }
 
@@ -194,6 +194,9 @@ export class TicketService {
       where: {
         id: movieId,
       },
+      include: {
+        seats: true,
+      },
     });
 
     const userBalance = userData.balance.balance;
@@ -227,54 +230,79 @@ export class TicketService {
     const updateBalance = userBalance - totalMoviePrice;
 
     try {
-      const updateUser: any = await this.prisma.user.update({
-        where: {
-          id: user.id,
-        },
-        select: {
-          orders: {
+      const updateSeats = [];
+      for (const seat of seats) {
+        let seatMovie = movieData.seats.find(
+          (movieSeat) => movieSeat.seatNumber === seat,
+        );
+        if (!seatMovie) {
+          const seatMovie = await this.prisma.seats.create({
+            data: {
+              isBook: true,
+              seatNumber: seat,
+              movieId,
+            },
             select: {
               id: true,
             },
+          });
+          updateSeats.push(seatMovie);
+          continue;
+        }
+        const updateSeatMovie = await this.prisma.seats.update({
+          where: {
+            id: seatMovie.id,
+          },
+          data: {
+            isBook: true,
+            seatNumber: seat,
+            movieId,
+          },
+          select: {
+            id: true,
+          },
+        });
+        updateSeats.push(updateSeatMovie);
+      }
+
+      const createOrder = await this.prisma.orders.create({
+        data: {
+          total: totalMoviePrice,
+          userId: user.id,
+          movieId,
+          ticket: {
+            create: updateSeats.map((seat) => ({
+              isCancel: false,
+              seatsId: seat.id,
+              userId: user.id,
+            })),
           },
         },
-        data: {
-          balance: {
-            update: {
-              balance: updateBalance,
+        include: {
+          User: {
+            select: {
+              username: true,
+              name: true,
             },
           },
-          Tickets: {
-            create: {
-              Seats: {
-                create: seats.map((seatBook) => ({
-                  seatNumber: seatBook,
-                  isBook: true,
-                  movieId: movieId,
-                  bookAt: new Date(),
-                })) as [],
-              },
-              Orders: {
-                create: {
-                  total: totalMoviePrice,
-                  movieId,
-                },
-              },
+          ticket: {
+            select: {
+              Seats: true,
+            },
+          },
+          Movie: {
+            select: {
+              title: true,
             },
           },
         },
       });
 
-      const ordersId = updateUser.orders[updateUser.orders.length - 1];
-
       return {
         statusCode: 201,
-        message: `Success Book Ticket Number ${seats}`,
-        movieId,
-        totalPrice: totalMoviePrice,
-        currentBalance: updateBalance,
-        ordersId,
-        seatsBook: seats,
+        message: `Success Book Seats Number ${seats} `,
+        total: totalMoviePrice,
+        data: createOrder,
       };
     } catch (error) {
       throw error;

@@ -60,9 +60,6 @@ model Seats {
   Movie      Movie   @relation(fields: [movieId], references: [id])
   movieId    Int
 
-  bookAt   DateTime?
-  cancelAt DateTime?
-
   tickets Tickets[]
 }
 
@@ -88,7 +85,10 @@ model Tickets {
 
   isCancel Boolean?
 
-  User   User?   @relation(fields: [userId], references: [id])
-  userId String?
-  Seats  Seats[]
+  User    User?   @relation(fields: [userId], references: [id])
+  userId  String?
+  Seats   Seats?  @relation(fields: [seatsId], references: [id])
+  seatsId String?
+
+  cancelAt DateTime?
 }

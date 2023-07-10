@@ -23,7 +23,7 @@ export class MovieService {
       return {
         statusCode: 200,
         message: 'Success Search Movies',
-        movies,
+        data: movies,
       };
     } catch (error) {
       throw error;
@@ -58,7 +58,7 @@ export class MovieService {
     return {
       statusCode: 200,
       message: `Success Get Movie id : ${movieId} Details`,
-      movie,
+      data: movie,
     };
   }
 }

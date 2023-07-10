@@ -41,7 +41,7 @@ export class AuthService {
       return {
         statusCode: 201,
         message: 'User Created',
-        user,
+        data: user,
       };
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -72,7 +72,7 @@ export class AuthService {
       return {
         statusCode: 200,
         message: 'Log In!',
-        user,
+        data: user,
         token,
       };
     } catch (error) {

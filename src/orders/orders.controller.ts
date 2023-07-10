@@ -30,16 +30,8 @@ export class OrdersController {
     return this.orderService.getOrdersByUserId(user);
   }
 
-  @Delete('cancel/:id')
-  cancelOrder(
-    @GetUser() user: User,
-    @Body() ticketsId: cancelOrderDto,
-    @Param('id', ParseIntPipe) movieId: number,
-  ) {
-    return this.orderService.cancelOrder(
-      user,
-      ticketsId.ticketsSeatNumber,
-      movieId,
-    );
+  @Delete('cancel')
+  cancelOrder(@GetUser() user: User, @Body() ticketsId: cancelOrderDto) {
+    return this.orderService.cancelOrder(user, ticketsId.ticketsId);
   }
 }

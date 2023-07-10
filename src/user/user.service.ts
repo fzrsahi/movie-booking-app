@@ -27,6 +27,7 @@ export class UserService {
       const ticketsData = await this.prisma.tickets.findMany({
         where: {
           userId: user.id,
+          isCancel: false,
         },
         include: {
           Seats: true,
@@ -42,5 +43,19 @@ export class UserService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async getTicketsById(user: User, ticketsId: string) {
+    const tickets = await this.prisma.tickets.findUnique({
+      where: {
+        id: ticketsId,
+      },
+    });
+
+    return {
+      statusCode: 200,
+      message: `Success Fetch ${user.username} data`,
+      data: tickets,
+    };
   }
 }

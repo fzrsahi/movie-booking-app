@@ -8,104 +8,119 @@ export class OrdersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getOrdersByUserId(user: User) {
-    const orders = await this.prisma.tickets.findMany({
+    const orders = await this.prisma.orders.findMany({
       where: {
         userId: user.id,
       },
       include: {
-        Orders: true,
-        Seats: true,
+        User: {
+          select: {
+            username: true,
+            name: true,
+          },
+        },
+        ticket: {
+          select: {
+            Seats: true,
+          },
+        },
+        Movie: {
+          select: {
+            title: true,
+          },
+        },
       },
-    });
-
-    orders.forEach((order) => {
-      delete order.userId;
     });
 
     return {
       statusCode: 200,
       message: `Success Get All Of ${user.id} Order History `,
       length: orders.length,
-      orderHistory: orders,
+      data: orders,
     };
   }
 
-  async cancelOrder(user: User, seatsNumber: number[], movieId) {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-    const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
-    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
-
-    const seats = await this.prisma.seats.findMany({
-      // where: {
-      //   userId: user.id,
-      //   seatNumber: {
-      //     in: seatsNumber,
-      //   },
-      //   movieId,
-      // },
-    });
-
-    seats.forEach((seat) => {
-      if (!seat.isBook) {
-        throw new BadRequestException(
-          'Sorry, the following tickets have been canceled',
-        );
-      }
-    });
-
-    const movie = await this.prisma.movie.findFirst({
-      where: {
-        id: movieId,
-      },
-    });
-
-    const userData = await this.prisma.balance.findUnique({
-      where: {
-        userId: user.id,
-      },
-    });
-
-    const currentBalance = userData.balance;
-    const seatsPrices = movie.price * seatsNumber.length;
-    const newBalance = currentBalance + seatsPrices;
-
+  async cancelOrder(user: User, ticketsId: string[]) {
     try {
-      // await this.prisma.seats.updateMany({
-      //   where: {
-      //     userId: user.id,
-      //     seatNumber: {
-      //       in: seatsNumber,
-      //     },
-      //     movieId,
-      //   },
-      //   data: {
-      //     isBook: false,
-      //     cancelAt: formattedDate,
-      //     userId: null,
-      //   },
-      // });
+      const userData = await this.prisma.user.findUnique({
+        where: {
+          id: user.id,
+        },
+        select: {
+          balance: {
+            select: {
+              balance: true,
+            },
+          },
+          orders: {
+            select: {
+              ticket: {
+                where: {
+                  id: {
+                    in: ticketsId,
+                  },
+                },
+              },
+              Movie: {
+                select: {
+                  price: true,
+                },
+              },
+            },
+          },
+        },
+      });
 
-      await this.prisma.balance.update({
+      const seatsId = userData.orders.flatMap((seat) => {
+        return seat.ticket.map((seat) => seat.seatsId);
+      });
+
+      const seatsPrice = userData.orders.flatMap((seat) => {
+        return seat.Movie.price;
+      });
+
+      const updateTickets = await this.prisma.tickets.updateMany({
+        where: {
+          id: {
+            in: ticketsId,
+          },
+        },
+        data: {
+          isCancel: true,
+          cancelAt: new Date(),
+        },
+      });
+
+      const updateSeats = await this.prisma.seats.updateMany({
+        where: {
+          id: {
+            in: seatsId,
+          },
+        },
+        data: {
+          isBook: false,
+        },
+      });
+      const moviePrice = seatsPrice[0] * ticketsId.length;
+      const userBalance = userData.balance.balance;
+
+      const updateBalance = userBalance + moviePrice;
+
+      const updateUserBalance = await this.prisma.balance.update({
         where: {
           userId: user.id,
         },
         data: {
-          balance: newBalance,
+          balance: updateBalance,
         },
       });
-
       return {
         statusCode: 201,
-        message: `Success Cancel Seats Number ${seatsNumber}`,
+        message: `Success Cancel Seats`,
+        data: updateUserBalance,
       };
     } catch (error) {
-      throw error;
+      return error;
     }
   }
 
@@ -124,7 +139,7 @@ export class OrdersService {
       return {
         statusCode: 200,
         message: `Success Get ${user.name} order ${orderId} details`,
-        order,
+        data: order,
       };
     } catch (error) {
       throw error;
