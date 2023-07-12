@@ -90,5 +90,7 @@ model Tickets {
   Seats   Seats?  @relation(fields: [seatsId], references: [id])
   seatsId String?
 
+  bookAt DateTime
+
   cancelAt DateTime?
 }

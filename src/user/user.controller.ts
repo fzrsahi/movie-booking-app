@@ -11,12 +11,7 @@ export class UserController {
 
   @Get('me')
   getCurrentUserLogin(@GetUser() user: User) {
-    return this.userService.getCurrentUserLogin(user);
-  }
-
-  @Get('tickets')
-  getTickets(@GetUser() user: User) {
-    return this.userService.getTickets(user);
+    return this.userService.getUserData(user);
   }
 
   @Get('tickets/:id')

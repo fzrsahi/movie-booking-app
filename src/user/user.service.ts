@@ -5,13 +5,32 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
-  async getCurrentUserLogin(user: User) {
+  async getUserData(user: User) {
     const userData = await this.prisma.user.findUnique({
       where: {
         id: user.id,
       },
       include: {
         balance: true,
+        Tickets: {
+          select: {
+            id: true,
+            bookAt: true,
+            cancelAt: true,
+            isCancel: true,
+            Seats: {
+              select: {
+                id: true,
+                isBook: true,
+                Movie: {
+                  select: {
+                    title: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
     delete userData.hash;
@@ -20,33 +39,6 @@ export class UserService {
       message: `Success Fetch ${user.username} data `,
       data: userData,
     };
-  }
-
-  async getTickets(user: User) {
-    try {
-      const ticketsData = await this.prisma.tickets.findMany({
-        where: {
-          userId: user.id,
-          isCancel: false,
-        },
-        include: {
-          Seats: {
-            include: {
-              Movie: true,
-            },
-          },
-        },
-      });
-
-      return {
-        statusCode: 200,
-        message: `Success Fetch ${user.username} Data`,
-        length: ticketsData.length,
-        data: ticketsData,
-      };
-    } catch (error) {
-      throw error;
-    }
   }
 
   async getTicketsById(user: User, ticketsId: string) {

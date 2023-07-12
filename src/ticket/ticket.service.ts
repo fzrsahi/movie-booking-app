@@ -130,6 +130,7 @@ export class TicketService {
               isCancel: false,
               seatsId: seat.id,
               userId: user.id,
+              bookAt: new Date(),
             })),
           },
         },
