@@ -31,19 +31,31 @@ export class MovieService {
   }
 
   async getAllMovies(page: number, limit: number) {
-    const skip: number = (page - 1) * limit;
-    const totalCount = await this.prisma.movie.count();
-    const movies = await this.prisma.movie.findMany({
-      take: limit,
-      skip,
-    });
+    try {
+      const skip: number = (page - 1) * limit;
+      const totalCount = await this.prisma.movie.count();
+      const movies = await this.prisma.movie.findMany({
+        take: limit,
+        skip,
+        include: {
+          _count: true,
+        },
+      });
 
-    return {
-      statusCode: 200,
-      length: movies.length,
-      total: totalCount,
-      data: movies,
-    };
+      const totalPage = Math.ceil(totalCount / limit);
+
+      return {
+        statusCode: 200,
+        message: 'Success Fetch All Movies',
+        page,
+        length: movies.length,
+        totalData: totalCount,
+        totalPage,
+        data: movies,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   async getMovieById(movieId: number) {
