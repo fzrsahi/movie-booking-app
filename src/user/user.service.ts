@@ -24,6 +24,7 @@ export class UserService {
             isCancel: true,
             Seats: {
               select: {
+                seatNumber: true,
                 id: true,
                 isBook: true,
                 Movie: {
