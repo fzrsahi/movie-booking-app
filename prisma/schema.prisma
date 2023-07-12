@@ -28,7 +28,7 @@ model User {
 
 model Balance {
   id      String @id @default(uuid())
-  balance Int
+  balance BigInt
   user    User   @relation(fields: [userId], references: [id])
   userId  String @unique
 

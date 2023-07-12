@@ -54,7 +54,7 @@ export class TicketService {
       },
     });
 
-    const userBalance = userData.balance.balance;
+    const userBalance: bigint = userData.balance.balance;
     const userAge = userData.age;
 
     const moviePrice = movieData.price;
@@ -82,7 +82,8 @@ export class TicketService {
       );
     }
 
-    const updateBalance = userBalance - totalMoviePrice;
+    const updateBalance = userBalance - BigInt(totalMoviePrice);
+    console.log(updateBalance);
 
     try {
       const updateSeats = [];
@@ -119,6 +120,15 @@ export class TicketService {
         });
         updateSeats.push(updateSeatMovie);
       }
+
+      const updateUserBalance = await this.prisma.balance.update({
+        where: {
+          userId: user.id,
+        },
+        data: {
+          balance: updateBalance,
+        },
+      });
 
       const createOrder = await this.prisma.orders.create({
         data: {

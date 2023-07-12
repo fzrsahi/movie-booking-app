@@ -11,7 +11,11 @@ export class UserService {
         id: user.id,
       },
       include: {
-        balance: true,
+        balance: {
+          select: {
+            balance: true,
+          },
+        },
         Tickets: {
           select: {
             id: true,
@@ -33,11 +37,15 @@ export class UserService {
         },
       },
     });
+
+    const balance = userData.balance.balance.toString();
+
+    delete userData.balance.balance;
     delete userData.hash;
     return {
       statusCode: 200,
       message: `Success Fetch ${user.username} data `,
-      data: userData,
+      data: { ...userData, balance },
     };
   }
 

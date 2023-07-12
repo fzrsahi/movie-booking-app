@@ -12,39 +12,37 @@ export class BalanceService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getBalance(user: User) {
-    const balance = await this.prisma.balance.findUnique({
-      where: {
-        userId: user.id,
-      },
-      include: {
-        user: {
-          select: {
-            username: true,
+    try {
+      const userBalance = await this.prisma.balance.findUnique({
+        where: {
+          userId: user.id,
+        },
+        include: {
+          user: {
+            select: {
+              username: true,
+            },
           },
         },
-      },
-    });
+      });
 
-    const balanceInRp = this.toRupiah(balance.balance);
+      const balanceInRp = this.toRupiah(userBalance.balance);
+      const balance = userBalance.balance.toString();
 
-    return {
-      statusCode: 200,
-      message: 'Success Get User Balance',
-      balance: balanceInRp,
-      data: balance,
-    };
+      return {
+        statusCode: 200,
+        message: 'Success Get User Balance',
+        balance: balanceInRp,
+        data: { ...userBalance, balance },
+      };
+    } catch (error) {
+      return error;
+    }
   }
 
   async addBalance(dto: BalanceDto, user: User) {
-    const maxAllowedValue = Number.MAX_SAFE_INTEGER;
-    if (dto.balance > maxAllowedValue) {
-      throw new BadRequestException({
-        statusCode: 400,
-        message: `Value cannot exceed ${maxAllowedValue}`,
-      });
-    }
     try {
-      const balance = await this.prisma.balance.findUnique({
+      const userBalance = await this.prisma.balance.findUnique({
         where: {
           userId: user.id,
         },
@@ -55,7 +53,7 @@ export class BalanceService {
           userId: user.id,
         },
         data: {
-          balance: balance.balance + dto.balance,
+          balance: userBalance.balance + BigInt(dto.balance),
         },
         select: {
           balance: true,
@@ -67,6 +65,8 @@ export class BalanceService {
         },
       });
 
+      const balance = this.balanceToString(updateBalance.balance);
+
       const rupiah = this.toRupiah(dto.balance);
       const currentBalance = this.toRupiah(updateBalance.balance);
 
@@ -75,7 +75,7 @@ export class BalanceService {
         message: `Success Add ${rupiah} to your balance!`,
         addedBalance: rupiah,
         currentBalance,
-        data: updateBalance,
+        data: { ...updateBalance, balance },
       };
     } catch (error) {
       throw error;
@@ -90,18 +90,21 @@ export class BalanceService {
     });
     const currentBalance = balance.balance;
 
-    if (currentBalance - dto.withdrawal < 0) {
+    const toWithdrawn = BigInt(dto.withdrawal);
+
+    if (currentBalance - toWithdrawn < 0) {
       throw new BadRequestException('insufficient balance');
     }
 
     const maximumWithdrawal = this.calculateMaximumWithdrawal(currentBalance);
-    let withdrawalAmount = dto.withdrawal;
+
+    let withdrawalAmount = toWithdrawn;
 
     let messageWarning;
-    if (dto.withdrawal > maximumWithdrawal) {
-      withdrawalAmount = 500000;
+    if (toWithdrawn > maximumWithdrawal) {
+      withdrawalAmount = BigInt(500000);
       messageWarning =
-        'The maximum amount that can be withdrawn is Min(current balance, 500.000) for each withdrawal.';
+        'The maximum amount that can be withdrawn is  Rp.500.000,00 for each withdrawal.';
     }
 
     const updatedBalance = currentBalance - withdrawalAmount;
@@ -126,30 +129,34 @@ export class BalanceService {
         },
       });
 
+      const balance = this.balanceToString(balanceWithdrawal.balance);
+      delete balanceWithdrawal.balance;
       const withdrawalAmountInRp = this.toRupiah(withdrawalAmount);
-      const currentBalanceInRp = this.toRupiah(balanceWithdrawal.balance);
 
       return {
         statusCode: 201,
         message: `Successfully Withdraw Balance by amount ${withdrawalAmountInRp}`,
-        currentBalance: currentBalanceInRp,
         messageWarning,
-        data: balanceWithdrawal,
+        data: { ...balanceWithdrawal, balance },
       };
     } catch (error) {
       throw error;
     }
   }
 
-  toRupiah(number: number) {
+  toRupiah(number: bigint) {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
     }).format(number);
   }
 
-  calculateMaximumWithdrawal(currentBalance: number) {
-    const maximumWithdrawal = Math.min(currentBalance, 500000);
+  calculateMaximumWithdrawal(currentBalance: bigint): bigint {
+    const maximumWithdrawal = BigInt(Math.min(Number(currentBalance), 500000));
     return maximumWithdrawal;
+  }
+
+  balanceToString(balance: bigint) {
+    return balance.toString();
   }
 }

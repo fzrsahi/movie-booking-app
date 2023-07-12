@@ -29,7 +29,7 @@ export class AuthService {
           hash,
           balance: {
             create: {
-              balance: 0,
+              balance: BigInt(0),
             },
           },
         },

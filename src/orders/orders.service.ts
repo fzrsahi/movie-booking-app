@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { Balance, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { cancelOrderDto } from './dto';
 
@@ -106,7 +106,7 @@ export class OrdersService {
       const moviePrice = seatsPrice[0] * ticketsId.length;
       const userBalance = userData.balance.balance;
 
-      const updateBalance = userBalance + moviePrice;
+      const updateBalance = userBalance + BigInt(moviePrice);
 
       const updateUserBalance = await this.prisma.balance.update({
         where: {
@@ -116,10 +116,13 @@ export class OrdersService {
           balance: updateBalance,
         },
       });
+
+      const balance = updateUserBalance.balance.toString();
+      delete updateUserBalance.balance;
       return {
         statusCode: 201,
         message: `Success Cancel Seats`,
-        data: updateUserBalance,
+        data: { ...updateUserBalance, balance },
       };
     } catch (error) {
       return error;

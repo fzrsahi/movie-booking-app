@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -24,6 +25,12 @@ export class BalanceController {
 
   @Post()
   addBalance(@GetUser() user: User, @Body() dto: BalanceDto) {
+    if (dto.balance > 999999999999999999) {
+      throw new BadRequestException({
+        statusCode: 400,
+        message: 'Cannot Top Up More Than RP.999.999.999.999.999.999',
+      });
+    }
     return this.balanceService.addBalance(dto, user);
   }
 
