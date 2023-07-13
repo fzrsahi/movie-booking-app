@@ -83,7 +83,6 @@ export class TicketService {
     }
 
     const updateBalance = userBalance - BigInt(totalMoviePrice);
-    console.log(updateBalance);
 
     try {
       const updateSeats = [];

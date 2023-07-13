@@ -7,39 +7,43 @@ import { cancelOrderDto } from './dto';
 export class OrdersService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getOrdersByUserId(user: User) {
-    const orders = await this.prisma.orders.findMany({
-      where: {
-        userId: user.id,
-      },
-      include: {
-        User: {
-          select: {
-            username: true,
-            name: true,
+  async getUserOrders(user: User) {
+    try {
+      const orders = await this.prisma.orders.findMany({
+        where: {
+          userId: user.id,
+        },
+        include: {
+          User: {
+            select: {
+              username: true,
+              name: true,
+            },
+          },
+          ticket: {
+            select: {
+              Seats: true,
+              isCancel: true,
+              cancelAt: true,
+            },
+          },
+          Movie: {
+            select: {
+              title: true,
+            },
           },
         },
-        ticket: {
-          select: {
-            Seats: true,
-            isCancel: true,
-            cancelAt: true,
-          },
-        },
-        Movie: {
-          select: {
-            title: true,
-          },
-        },
-      },
-    });
+      });
 
-    return {
-      statusCode: 200,
-      message: `Success Get All Of ${user.id} Order History `,
-      length: orders.length,
-      data: orders,
-    };
+      return {
+        statusCode: 200,
+        message: `Success Get All Of ${user.id} Order History `,
+        length: orders.length,
+        data: orders,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   async cancelOrder(user: User, ticketsId: string[]) {

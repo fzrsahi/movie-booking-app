@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { MovieModule } from './movie/movie.module';
 import { PrismaService } from './prisma/prisma.service';
 
@@ -25,7 +23,7 @@ import { OrdersModule } from './orders/orders.module';
     TicketModule,
     OrdersModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, PrismaService],
+  controllers: [],
+  providers: [PrismaService],
 })
 export class AppModule {}

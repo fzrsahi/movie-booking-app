@@ -24,12 +24,65 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This is a repository for the task given by Compfest as a requirement to join the Software Engineer Academy.
+
+This REST API Application use Nest Js, Posgtree SQL, and deploy into [Railway](https://movie-booking-app-production.up.railway.app/api/v1/movies?page=1&limit=10). Click to see the REST API
 
 ## Installation
 
 ```bash
 $ npm install
+```
+
+## Configure The database
+
+This App use docker compose to configure the Postgree SQL database.
+configure the docker compose :
+
+rename the docker-compose copy.yml to docker-compose.yml
+
+```bash
+
+version: '3.8'
+services:
+  dev-db:
+    image: postgres:alpine3.18
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: yourhostname
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: yourdbname
+
+      # change the value to your configuration
+
+```
+
+## Configure the .env file
+
+rename the .env copy to .env
+
+```bash
+ example .env file :
+ - DATABASE_URL="postgresql://yourhostname:yourpassword@localhost:5434/yourdbname?schema=public"
+ - JWT_SECRET="yoursecretjwttoken"
+ - SECRET_TOKEN="yoursecretjwttoken"
+ - PORT =3000 # default
+
+ #NOTE : if you use the docker compose , please make sure the value you use in the .env DATABASE_URL same with value you use in docker-compose.yml
+```
+
+## Build the database
+
+```bash
+# generate prisma
+$ npx prisma generate
+
+# push the schema
+$ npx prisma db push
+
+# seed the database
+$ npx prisma db seed
 ```
 
 ## Running the app
@@ -45,28 +98,19 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
+## Rest Api Documentation
 
-```bash
-# unit tests
-$ npm run test
+you can see the endpoint documentation in here
 
-# e2e tests
-$ npm run test:e2e
+[LINK DOCUMENTATION](https://documenter.getpostman.com/view/21962409/2s946e9tW4#sea-cinema-rest-api)
 
-# test coverage
-$ npm run test:cov
-```
+## Stay in touch
+
+- Author - [Fazrul Anugrah Sahi](https://instagram.com/fzrsahi)
 
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
 
 ## License
 

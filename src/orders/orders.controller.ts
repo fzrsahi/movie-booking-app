@@ -27,7 +27,7 @@ export class OrdersController {
 
   @Get()
   getOrderByUserId(@GetUser() user: User) {
-    return this.orderService.getOrdersByUserId(user);
+    return this.orderService.getUserOrders(user);
   }
 
   @Delete('cancel')
