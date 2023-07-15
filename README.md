@@ -32,6 +32,9 @@ This REST API Application use Nest Js, Posgtree SQL, and deploy into [Railway](h
 
 ## Installation
 
+1. Clone this repository
+2. Install Dependencies
+
 ```bash
 $ npm install
 ```
@@ -100,11 +103,33 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+#### Run localhost:3000/api/v1/movies?page=1&limit=10 in your browser
+
 ## Rest Api Documentation
 
 you can see the endpoint documentation in here
 
 [LINK DOCUMENTATION](https://documenter.getpostman.com/view/21962409/2s946e9tW4#sea-cinema-rest-api)
+
+## ERD
+
+![Alt text](erd.png 'ERD')
+
+## Features
+
+- Login
+- Register
+- Movie list
+- Movie detail
+- Ticket booking
+- Transaction detail
+- Show tickets in transaction detail
+- Top up balance
+- Withdraw balance
+- Search movie by title
+- Transaction history
+- Cancel order/transaction
+- Cancel ticket
 
 ## Stay in touch
 
