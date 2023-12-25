@@ -3,9 +3,12 @@ import { UserService } from './user.service';
 import { JwtGuard } from 'src/auth/guard';
 import { GetUser } from 'src/auth/decorator';
 import { User } from '@prisma/client';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @UseGuards(JwtGuard)
-@Controller('user')
+@Controller('users')
+@ApiTags("Users")
+@ApiBearerAuth('JWTAUTH')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -15,7 +18,7 @@ export class UserController {
   }
 
   @Get('tickets/:id')
-  getTicketsById(@GetUser() user: User, @Param() ticketsId) {
-    return this.userService.getTicketsById(user, ticketsId.id);
+  getTicketsById(@GetUser() user: User, @Param("id") ticketsId : string) {
+    return this.userService.getTicketsById(user, ticketsId);
   }
 }

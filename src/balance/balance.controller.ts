@@ -11,9 +11,12 @@ import { BalanceDto, BalanceWithdrawalDto } from './dto';
 import { JwtGuard } from 'src/auth/guard';
 import { User } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @UseGuards(JwtGuard)
-@Controller('balance')
+@ApiTags("Balances")
+@ApiBearerAuth('JWTAUTH')
+@Controller('balances')
 export class BalanceController {
   constructor(private readonly balanceService: BalanceService) {}
 

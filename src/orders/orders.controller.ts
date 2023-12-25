@@ -14,8 +14,11 @@ import { GetUser } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
 import { OrdersService } from './orders.service';
 import { cancelOrderDto } from './dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @UseGuards(JwtGuard)
+@ApiBearerAuth('JWTAUTH')
+@ApiTags("Orders")
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly orderService: OrdersService) {}

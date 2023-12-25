@@ -13,21 +13,24 @@ import { JwtGuard } from 'src/auth/guard';
 import { GetUser } from 'src/auth/decorator';
 import { User } from '@prisma/client';
 import { TicketDto } from './dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @Controller('tickets')
+@ApiTags('Tickets')
 export class TicketController {
   constructor(private readonly ticketService: TicketService) {}
 
-  @Get('seat/:id')
-  getSeat(@Param('id', ParseIntPipe) movieId: number) {
+  @Get('seat/:movie_id')
+  getSeat(@Param('movie_id', ParseIntPipe) movieId: number) {
     return this.ticketService.getSeat(movieId);
   }
 
   @UseGuards(JwtGuard)
-  @Post('seat/:id')
+  @ApiBearerAuth('JWTAUTH')
+  @Post('seat/:movie_id')
   bookSeat(
     @GetUser() user: User,
-    @Param('id', ParseIntPipe) movieId,
+    @Param('movie_id', ParseIntPipe) movieId : number,
     @Body() dto: TicketDto,
   ) {
     if (!dto.seatNumber.length) {
