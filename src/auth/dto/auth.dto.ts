@@ -31,7 +31,7 @@ export class CreateUserDto {
   hash: string;
 
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({ example: '2003-03-17' })
   birth: string;
 
   @IsNumber()
