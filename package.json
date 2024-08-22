@@ -9,22 +9,19 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "scripts": {
-    "db:dev:down": "docker compose down",
-    "db:dev:up": "docker compose up -d",
-    "db:migrate": "npx prisma db push",
-    "db:restart": "npm run db:dev:down && sleep 1 && npm run db:dev:up && sleep 2 && npm run db:migrate",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/src/main",
+    "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "migrate:db": "npx prisma migrate deploy"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
@@ -35,6 +32,7 @@
     "@nestjs/passport": "^10.0.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^7.1.17",
+    "@nestjs/throttler": "^6.1.1",
     "@prisma/client": "^4.16.1",
     "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",
