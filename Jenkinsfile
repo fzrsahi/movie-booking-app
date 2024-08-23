@@ -55,8 +55,7 @@ pipeline {
     post {
         always {
             script {
-                // sh 'docker compose down'
-                echo 'OK'
+                sh 'docker compose up -a -f'
             }
         }
     }

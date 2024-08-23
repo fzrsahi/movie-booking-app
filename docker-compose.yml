@@ -6,10 +6,16 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "${PORT}:3000"
+      - "${PORT}:3001"
     environment:
       - PORT
       - SECRET_AUTH_KEY
       - APP_MODE
       - HIDE_POST_ENDPOINTS
       - DATABASE_URL
+    networks:
+      - db_postgres
+
+networks:
+  db_postgres:
+    external: true
