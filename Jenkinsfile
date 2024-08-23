@@ -55,7 +55,7 @@ pipeline {
     post {
         always {
             script {
-                sh 'docker compose up -a -f'
+                sh 'docker image prune -a -f'
             }
         }
     }
